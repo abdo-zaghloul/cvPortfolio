@@ -59,10 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
   
   const starTrail = document.querySelector(".tech .star-trail");
-  const sliderTitle = document.querySelector(".websites .slider-title");
   const astronaut = document.querySelector(".contact .astronaut");
   window.addEventListener("scroll", () => {
-    let s4 = window.scrollY / 4;
     let s8 = window.scrollY / 8;
     let s17 = window.scrollY / 17;
     if (s8 <= 200) {
@@ -70,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       s8 = 200;
     }
-    sliderTitle.style.transform = `translate3d(0px, ${s4}px, 0px)`;
     astronaut.style.transform = `translate3d(0px, ${s17}px, 0px)`;
   });
   
@@ -98,6 +95,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   window.addEventListener("scroll", animate);
+
+  // Section reveal on scroll
+  const revealSections = () => {
+    const sections = document.querySelectorAll(".section-reveal");
+    const windowHeight = window.innerHeight;
+    const revealPoint = windowHeight * 0.75;
+    sections.forEach((section) => {
+      const top = section.getBoundingClientRect().top;
+      if (top < revealPoint) {
+        section.classList.add("revealed");
+        const list = section.querySelector(".answer-stagger");
+        if (list) list.classList.add("revealed");
+      }
+    });
+  };
+  window.addEventListener("scroll", revealSections);
+  window.addEventListener("load", revealSections);
 
   
   
