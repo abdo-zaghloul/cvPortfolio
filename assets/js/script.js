@@ -71,17 +71,83 @@ document.addEventListener("DOMContentLoaded", () => {
     astronaut.style.transform = `translate3d(0px, ${s17}px, 0px)`;
   });
   
-  // Slider
-  let next = document.querySelector(".next");
-  let prev = document.querySelector(".prev");
-  next.addEventListener("click", function () {
-    let items = document.querySelectorAll(".item");
-    document.querySelector(".slide").appendChild(items[0]); // appendChild Purpose: Adds a node to the end of the list.
-  });
-  prev.addEventListener("click", function () {
-    let items = document.querySelectorAll(".item");
-    document.querySelector(".slide").prepend(items[items.length - 1]); // prepend Purpose: Adds a node to the beginning of the list of children of a specified parent node.
-  });
+  // ========== Projects Carousel ==========
+  const carousel = document.getElementById("carousel");
+  const prevBtn = document.getElementById("carouselPrev");
+  const nextBtn = document.getElementById("carouselNext");
+
+  if (carousel && prevBtn && nextBtn) {
+    const cards = carousel.querySelectorAll(".card");
+    const total = cards.length;
+    let currentIndex = 0;
+
+    function updateCarousel() {
+      cards.forEach((card, i) => {
+        card.classList.remove("pos-center", "pos-left", "pos-right", "pos-hidden");
+        if (i === currentIndex) {
+          card.classList.add("pos-center");
+        } else if (i === (currentIndex - 1 + total) % total) {
+          card.classList.add("pos-left");
+        } else if (i === (currentIndex + 1) % total) {
+          card.classList.add("pos-right");
+        } else {
+          card.classList.add("pos-hidden");
+        }
+      });
+    }
+
+    function goTo(index) {
+      currentIndex = (index + total) % total;
+      updateCarousel();
+    }
+
+    function goNext() {
+      goTo(currentIndex + 1);
+    }
+
+    function goPrev() {
+      goTo(currentIndex - 1);
+    }
+
+    nextBtn.addEventListener("click", goNext);
+    prevBtn.addEventListener("click", goPrev);
+
+    // Click center card to open link
+    cards.forEach((card, i) => {
+      card.addEventListener("click", (e) => {
+        // Don't navigate if explore button was clicked (it has its own link)
+        if (e.target.closest(".explore-btn")) return;
+        if (i === currentIndex) {
+          const url = card.getAttribute("data-url");
+          if (url) window.open(url, "_blank");
+        } else {
+          goTo(i);
+        }
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    });
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    carousel.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    carousel.addEventListener("touchend", (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) goNext();
+        else goPrev();
+      }
+    });
+
+    // Initialize
+    updateCarousel();
+  }
   
   // elements animations
   function animate() {
